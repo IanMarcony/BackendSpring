@@ -1,11 +1,8 @@
 package com.marcony.osmarcony.api.controller;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -20,15 +17,20 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.marcony.osmarcony.api.exceptionhandler.ApiExceptionHandler;
 import com.marcony.osmarcony.domain.model.Cliente;
 import com.marcony.osmarcony.domain.repository.ClienteRepository;
+import com.marcony.osmarcony.domain.service.CadastroClienteService;
 
 @RestController
 @RequestMapping("/clientes")
 public class ClienteController {
 	
 	@Autowired
-	private ClienteRepository clienteRepository;
+	private ClienteRepository clienteRepository;	
+	
+	@Autowired
+	private CadastroClienteService cadastroClienteService;
 	
 	@GetMapping
 	public List<Cliente> index() {			
@@ -49,7 +51,7 @@ public class ClienteController {
 	@PostMapping
 	@ResponseStatus(HttpStatus.CREATED)
 	public Cliente add(  @RequestBody  Cliente  cliente) {
-		return clienteRepository.save(cliente);
+		return cadastroClienteService.salvar(cliente);
 		
 	}
 	 
@@ -59,7 +61,7 @@ public class ClienteController {
 			return ResponseEntity.notFound().build();
 		}
 		cliente.setId(id);
-		clienteRepository.save(cliente);
+		cliente = cadastroClienteService.salvar(cliente);
 		
 		
 		return ResponseEntity.ok(cliente);
@@ -68,7 +70,7 @@ public class ClienteController {
 	@DeleteMapping("/{id}")
 	public ResponseEntity<Void> delete(@PathVariable Long id){
 		if(!clienteRepository.existsById(id))return ResponseEntity.notFound().build();
-		clienteRepository.deleteById(id);
+		cadastroClienteService.excluir(id);
 		
 		return ResponseEntity.noContent().build();
 		
