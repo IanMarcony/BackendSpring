@@ -3,6 +3,7 @@ package com.marcony.osmarcony.api.controller;
 import java.util.List;
 import java.util.Optional;
 
+import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -50,13 +51,13 @@ public class ClienteController {
 	
 	@PostMapping
 	@ResponseStatus(HttpStatus.CREATED)
-	public Cliente add(  @RequestBody  Cliente  cliente) {
+	public Cliente add(@Valid  @RequestBody  Cliente  cliente) {
 		return cadastroClienteService.salvar(cliente);
 		
 	}
 	 
 	@PutMapping("/{id}")
-	public ResponseEntity<Cliente> update( @PathVariable Long id,@RequestBody Cliente cliente) {
+	public ResponseEntity<Cliente> update(@Valid @PathVariable Long id,@RequestBody Cliente cliente) {
 		if(!clienteRepository.existsById(id)) {
 			return ResponseEntity.notFound().build();
 		}
