@@ -3,6 +3,8 @@ package com.marcony.osmarcony.domain.model;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.validation.groups.Default;
 import javax.persistence.Entity;
@@ -12,6 +14,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
@@ -21,7 +24,8 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonProperty.Access;
-import com.marcony.osmarcony.domain.ValidationGroup;
+import com.marcony.osmarcony.domain.exception.AppException;
+
 
 @Entity
 public class OrdemServico {
@@ -30,28 +34,26 @@ public class OrdemServico {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	
-	@Valid
-	@ConvertGroup(from = Default.class , to = ValidationGroup.ClienteId.class)
-	@NotNull
+
 	@ManyToOne
 	private Cliente cliente;
 	
-	@NotBlank
+
 	private String descricao;
 	
-	@NotNull
 	private BigDecimal preco;
 	
 	
-	@JsonProperty(access = Access.READ_ONLY)
+	
 	@Enumerated(EnumType.STRING)
 	private StatusOrdemServico status;
 	
-	@JsonProperty(access = Access.READ_ONLY)
 	private OffsetDateTime dataAbertura;
 	
-	@JsonProperty(access = Access.READ_ONLY)
 	private OffsetDateTime dataFinalizacao;	
+	
+	@OneToMany(mappedBy = "ordemServico")
+	private List<Comentario> comentarios = new ArrayList<>();
 	
 	public OrdemServico() {		
 	}
@@ -108,6 +110,14 @@ public class OrdemServico {
 	public void setDataFinalizacao(OffsetDateTime dataFinalizacao) {
 		this.dataFinalizacao = dataFinalizacao;
 	}
+	
+	
+	public List<Comentario> getComentarios() {
+		return comentarios;
+	}
+	public void setComentarios(List<Comentario> comentarios) {
+		this.comentarios = comentarios;
+	}
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -131,6 +141,30 @@ public class OrdemServico {
 			return false;
 		return true;
 	}
+	
+	
+	
+	public void finalizar() {
+		if(!podeSerFinalizadaOrCancelar()) {
+			throw new AppException("Ordem de Servico não pode ser finalizada");
+		}
+		
+		this.status= StatusOrdemServico.FINALIZADA;
+		this.dataFinalizacao = OffsetDateTime.now();
+	}
+	private boolean podeSerFinalizadaOrCancelar() {
+		return StatusOrdemServico.ABERTA.equals(getStatus());
+	}
+	
+	public void cancelar() {
+		if(!podeSerFinalizadaOrCancelar()) {
+			throw new AppException("Ordem de Servico não pode ser cancelada");
+		}
+		
+		this.status= StatusOrdemServico.CANCELADA;
+		
+	}
+	
 	
 	
 	

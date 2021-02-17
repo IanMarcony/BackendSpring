@@ -3,7 +3,7 @@ package com.marcony.osmarcony.api.model;
 import java.math.BigDecimal;
 import java.time.OffsetDateTime;
 
-import com.marcony.osmarcony.domain.ValidationGroup.ClienteId;
+
 import com.marcony.osmarcony.domain.model.StatusOrdemServico;
 
 public class OrdemServicoModel {

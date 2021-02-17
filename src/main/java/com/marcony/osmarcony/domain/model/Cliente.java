@@ -12,12 +12,12 @@ import javax.validation.constraints.Size;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
-import com.marcony.osmarcony.domain.ValidationGroup;
+
 
 @Entity
 public class Cliente {
 	
-	@NotNull(groups = ValidationGroup.ClienteId.class)
+	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;

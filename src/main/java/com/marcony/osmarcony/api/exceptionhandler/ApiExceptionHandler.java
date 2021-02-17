@@ -19,6 +19,7 @@ import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 import com.marcony.osmarcony.domain.exception.AppException;
+import com.marcony.osmarcony.domain.exception.EntityNotFoundException;
 
 @ControllerAdvice
 public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
@@ -36,6 +37,19 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
 		
 		
 	}
+	
+	@ExceptionHandler(EntityNotFoundException.class)
+	public ResponseEntity<Object> handleEntityNotFound(AppException ex, WebRequest request) {
+		var status = HttpStatus.NOT_FOUND;
+		
+		var problema = new Problema(status.value(), OffsetDateTime.now(),ex.getMessage());
+		
+		return handleExceptionInternal(ex, problema, new HttpHeaders(), status, request);
+		
+		
+	}
+	
+	
 	
 	@Override
 	protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex,
